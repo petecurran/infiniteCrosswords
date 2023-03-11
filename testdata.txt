@@ -1,0 +1,27 @@
+6 SQUALL # Protagonist of Final Fantasy 8
+6 BALAMB # The school where the game takes place
+7 SHIVA # Summon creature that appears as a GF in the game
+6 ULTIMECIA # The name of the main antagonist
+7 GUNBLADE # The weapon that Squall wields
+7 DOLLET # The city where the player starts the game
+4 SEED # The organization that Squall and his friends belong to
+6 SEIFER # The name of Squall's rival
+8 ADEL # The sorceress who becomes the game's main villain
+5 GALBADIA # The name of the group of soldiers who act as antagonists
+6 JUNCTION # The type of magic that the characters use in the game
+7 AIRSHIP # The method of transportation used by the characters
+7 TIMECOMPRESSION # The location where the final battle takes place
+6 RINOA # The main female protagonist in the game
+7 CIDKRAMER # The school's headmaster
+6 ZELL # The playable character who uses nunchucks as a weapon
+6 ESTHAR # The country where the player goes after the school is destroyed
+7 IRVINE # The playable character who specializes in using guns
+5 TRIPLE # The name of the optional card game played in the game
+8 PUZZLEBOSS # The creature that Squall and his friends encounter in space
+
+# A list of all of the words in capital letters above
+words = [
+    'SQUALL', 'BALAMB', 'SHIVA', 'ULTIMECIA', 'GUNBLADE', 'DOLLET', 'SEED',
+    'SEIFER', 'ADEL', 'GALBADIA', 'JUNCTION', 'AIRSHIP', 'TIMECOMPRESSION',
+    'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
+]
