@@ -13,7 +13,7 @@ testWords = [
 ]
 
 # Curated test data
-curatedWords = ["BAGEL", "LINGER"]
+curatedWords = ["BAGEL", "BALLS"]
 
 # A list to hold completed crosswords
 generatedCrosswords = []
@@ -111,52 +111,74 @@ class Crossword:
                         # Set this word to be vertical
                         wordObject.direction = 'vertical'
 
-                        # If the height of the grid is less than the length of the word, increase the height of the grid                        
-                        if self.height < len(wordObject.text):
-                            oldHeight = self.height
-                            self.height = len(wordObject.text)
-                            for i in range(self.height - oldHeight):
-                                self.grid.append([' ' for i in range(self.width)])
-
-
-
                         # Attempt all possible positions for the word
                         for intersection in intersections:
                             # Set the x position to the x position of the intersection + the x position of the existing word
-                            wordObject.xposition = intersection[0] + existingWordObject.xposition
+                            wordObject.xposition = intersection[1] + existingWordObject.xposition
 
-                            # If the y position of the word is less than the y position of the intersection:
-                            if existingWordObject.yposition < intersection[1]:
-                                
-                                # Calculate number of moves down required to get to the intersection
-                                movesNeeded = intersection[1] - existingWordObject.yposition
+                            # If the intersection is at the start of the word, set the y position to the y position of the existing word
+                            if intersection[0] == 0:
+                                wordObject.yposition = existingWordObject.yposition
 
-                                # Add the number of extra rows needed to the grid
-                                for i in range(movesNeeded):
-                                    self.grid.append([' ' for i in range(self.width)])
-
-                                # Move all existing rows down by the number of moves needed
-                                for i in range(self.height-1, 0, -1):
-                                    self.grid[i] = self.grid[i-1]
+                            # Otherwise, check if we need to move the grid down to make room for the word
+                            else:
+                                # If the y position of the existing word is lower than the intersection with the second word,
+                                # We need to move the grid down to make room for the word
+                                if existingWordObject.yposition < intersection [0]:
                                     
-                                # Handle the final row
-                                self.grid[0] = [' ' for i in range(self.width)]
+                                    # Calculate the number of rows we need to move the grid down
+                                    rowsToMove = intersection[0] - existingWordObject.yposition
 
-                                # Add the word to the grid
-                                for letter in range(len(wordObject.text)):
-                                    self.grid[letter][wordObject.xposition] = wordObject.text[letter]
+                                    # Add the required number of rows to the grid
+                                    for row in range(rowsToMove):
+                                        self.grid.append([''] * self.width)
 
-                                # Update the position of the word in the grid
-                                wordObject.yposition = 0
+                                    # Update the height of the grid
+                                    self.height += rowsToMove
 
-                                # Increment the number of words
-                                self.numWords += 1
+                                    # Move each existing row down
+                                    # TODO - This could be done more efficiently
+                                    for i in range(rowsToMove):
+                                        for row in range(self.height-1, -1, -1):
+                                            # Append an empty row to the top of the grid
+                                            if row == 0:
+                                                self.grid[row] = [''] * self.width
+                                            # Move each row down one
+                                            else:
+                                                self.grid[row] = self.grid[row-1]
 
-                                # Add the word to the list of words added
-                                self.wordsAdded.append(wordObject.text)
+                                    # Update the y position of the existing word
+                                    existingWordObject.yposition += rowsToMove
 
-                                # Return true to indicate that the word was added
-                                return True
+                                    # Update the y position of the word
+                                    wordObject.yposition = 0
+
+                                # Otherwise, calculate the y position of the word using the intersection.
+                                else:
+                                    wordObject.yposition = existingWordObject.yposition - intersection[1]
+
+                            # Check if we need to make the grid taller to make room for the new word
+                            if wordObject.yposition + wordObject.length > self.height:
+                                # Calculate the number of rows we need to add to the grid
+                                rowsToAdd = wordObject.yposition + wordObject.length - self.height
+
+                                # Add the required number of rows to the grid
+                                for row in range(rowsToAdd):
+                                    self.grid.append([''] * self.width)
+
+                                # Update the height of the grid
+                                self.height += rowsToAdd
+
+                            # Write the word to the grid
+                            for i in range(wordObject.length):
+                                self.grid[wordObject.yposition + i][wordObject.xposition] = wordObject.text[i]
+
+
+
+                                    
+
+                            
+
                                     
 
     # Tool to look for intersections between words
@@ -188,10 +210,15 @@ class Crossword:
 
 testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
 # Add the first word from the crossword object to the grid
-#testCwd.addWord(testCwd.wordList[0])
-#testCwd.addWord(testCwd.wordList[1])
-#for row in testCwd.grid:
-    #print(row)
+testCwd.addWord(testCwd.wordList[0])
+testCwd.addWord(testCwd.wordList[1])
+for row in testCwd.grid:
+    for letter in row:
+        if letter == '':
+            print(' ', end=' ')
+        else:
+            print(letter, end=' ')
+    print()
 
 
 
