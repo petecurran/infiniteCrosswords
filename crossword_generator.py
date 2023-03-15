@@ -52,7 +52,7 @@ class Crossword:
 
             # Randomly choose a direction for the word
             #wordObject.direction = choice['horizontal', 'vertical']
-            wordObject.direction = 'horizontal' #Testing
+            wordObject.direction = 'vertical' #Testing
 
             # If the word is horizontal:
             if wordObject.direction == 'horizontal':
@@ -148,6 +148,7 @@ class Crossword:
                                                 self.grid[row] = self.grid[row-1]
 
                                     # Update the y position of the existing word
+                                    # TODO - we need to update ALL existing words
                                     existingWordObject.yposition += rowsToMove
 
                                     # Update the y position of the word
@@ -173,9 +174,87 @@ class Crossword:
                             for i in range(wordObject.length):
                                 self.grid[wordObject.yposition + i][wordObject.xposition] = wordObject.text[i]
 
+                            # Add the word to the list of words added
+                            self.wordsAdded.append(wordObject)
 
+                    # If the existing word is vertical:
+                    else:
+                            
+                        # Set this word to be horizontal
+                        wordObject.direction = 'horizontal'
 
+                        # Attempt all possible positions for the word
+                        for intersection in intersections:
+                            # Set the y position to the y position of the intersection + the y position of the existing word
+                            wordObject.yposition = intersection[1] + existingWordObject.yposition
+
+                            # If the intersection is at the start of the word, set the x position to the x position of the existing word
+                            if intersection[0] == 0:
+                                wordObject.xposition = existingWordObject.xposition
+
+                            # Otherwise, check if we need to move the grid right to make room for the word
+                            else:
+                                # If the x position of the existing word is lower than the intersection with the second word,
+                                # We need to move the grid right to make room for the word
+                                if existingWordObject.xposition < intersection [1]:
                                     
+                                    # Calculate the number of columns we need to move the grid right
+                                    columnsToMove = intersection[1] - existingWordObject.xposition
+
+                                    # Move each existing column right
+                                    # TODO - This could be done more efficiently
+                                    for i in range(columnsToMove):
+                                        for row in range(self.height):
+                                            # Append an empty column to the left of the grid
+                                            self.grid[row].insert(0, '')
+
+                                    # Update the width of the grid
+                                    self.width += columnsToMove
+
+                                    # Update the x position of the existing word
+                                    # TODO - we need to update ALL existing words
+                                    existingWordObject.xposition += columnsToMove
+
+                                    # Update the x position of the word
+                                    wordObject.xposition = 0
+
+                                # Otherwise, calculate the x position of the word using the intersection.
+                                else:
+                                    wordObject.xposition = existingWordObject.xposition - intersection[1]
+
+                            # Check if we need to make the grid wider to make room for the new word
+                            if wordObject.xposition + wordObject.length > self.width:
+                                # Calculate the number of columns we need to add to the grid
+                                columnsToAdd = wordObject.xposition + wordObject.length - self.width
+
+                                # Add the required number of columns to the grid
+                                for row in range(self.height):
+                                    for column in range(columnsToAdd):
+                                        self.grid[row].append('')
+
+                                # Update the width of the grid
+                                self.width += columnsToAdd
+
+                            # Write the word to the grid
+                            for i in range(wordObject.length):
+                                self.grid[wordObject.yposition][wordObject.xposition + i] = wordObject.text[i]
+
+                            # Add the word to the list of words in the crossword
+                            self.wordList.append(wordObject)
+
+                            ###################### TESTING ######################
+                            # print the grid
+                            for row in self.grid:
+                                for letter in row:
+                                    if letter == "":
+                                        print(" ", end=" ")
+                                    else:
+                                        print(letter, end=" ")
+                                print()
+                            print()
+                            #####################################################
+
+                return True                                  
 
                             
 
@@ -205,6 +284,5 @@ for row in testCwd.grid:
             print(letter, end=' ')
     print()
 
-
-
-    
+# Note - multiple possible intersections currently rendering on the same line, thus repeated letters.
+# TODO - Not currently moving across correctly on the final word in the example.
