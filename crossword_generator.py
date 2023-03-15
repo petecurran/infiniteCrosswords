@@ -193,21 +193,6 @@ class Crossword:
         # Return the list of intersections
         return intersections
 
-    
-# TODO - The find intersections function is misunderstood.
-# Currently I'm treating it like co-ordinates, but it's actually
-# (letter in word 1, letter in word 2)
-# So intersection (0, 4) means that the first letter in word 1
-# is the same as the fifth letter in word 2
-# L from linger, L from bagel
-# Need to recalculate how to place text in the grid
-
-
-
-
-
-
-
 testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
 # Add the first word from the crossword object to the grid
 testCwd.addWord(testCwd.wordList[0])
@@ -219,7 +204,6 @@ for row in testCwd.grid:
         else:
             print(letter, end=' ')
     print()
-
 
 
 
