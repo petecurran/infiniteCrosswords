@@ -13,7 +13,7 @@ testWords = [
 ]
 
 # Curated test data
-curatedWords = ["BAGEL", "BALLS"]
+curatedWords = ["BAGEL", "BAGEL"]
 
 # A list to hold completed crosswords
 generatedCrosswords = []
@@ -52,7 +52,7 @@ class Crossword:
 
             # Randomly choose a direction for the word
             #wordObject.direction = choice['horizontal', 'vertical']
-            wordObject.direction = 'vertical' #Testing
+            wordObject.direction = 'horizontal' #Testing
 
             # If the word is horizontal:
             if wordObject.direction == 'horizontal':
@@ -196,10 +196,10 @@ class Crossword:
                             else:
                                 # If the x position of the existing word is lower than the intersection with the second word,
                                 # We need to move the grid right to make room for the word
-                                if existingWordObject.xposition < intersection [1]:
+                                if existingWordObject.xposition < intersection [0]:
                                     
                                     # Calculate the number of columns we need to move the grid right
-                                    columnsToMove = intersection[1] - existingWordObject.xposition
+                                    columnsToMove = intersection[0] - existingWordObject.xposition
 
                                     # Move each existing column right
                                     # TODO - This could be done more efficiently
@@ -220,7 +220,7 @@ class Crossword:
 
                                 # Otherwise, calculate the x position of the word using the intersection.
                                 else:
-                                    wordObject.xposition = existingWordObject.xposition - intersection[1]
+                                    wordObject.xposition = existingWordObject.xposition - intersection[0]
 
                             # Check if we need to make the grid wider to make room for the new word
                             if wordObject.xposition + wordObject.length > self.width:
@@ -256,12 +256,13 @@ class Crossword:
 
                 return True                                  
 
-                            
-
-                                    
 
     # Tool to look for intersections between words
-    def findIntersections(self, word1, word2):          
+    def findIntersections(self, word1, word2):
+        '''Find all of the possible intersections between two words
+        Returns a list of tuples, each tuple containing the position of the intersection in each word
+        The first element in the tuple is the position in word1, the second element is the position in word2.
+        Under normal use this is (Position in the new word, position in the existing word)'''
         # Find all of the possible intersections between letters in the two words
         intersections = []
         for wordOneLetter in range(len(word1.text)):
