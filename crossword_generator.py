@@ -13,7 +13,7 @@ testWords = [
 ]
 
 # Curated test data
-curatedWords = ["BAGEL", "BAGEL"]
+curatedWords = ["ABCD", "GFED", "JIHG", "MAJKKA", "TIX"]
 
 # A list to hold completed crosswords
 generatedCrosswords = []
@@ -44,11 +44,34 @@ class Crossword:
         self.height = height
         self.wordsAdded = wordsAdded
 
+    def checkOverlaps(self, wordObject):
+        '''Check if the word overlaps any existing words in the grid.
+        Returns true if the word doesn't overlap any existing words, or if the overlapping letters match.
+        Returns false otherwise.'''
+
+        # Check if the word overlaps any existing words in the grid
+        for i in range(wordObject.length):
+            # If the word is horizontal:
+            if wordObject.direction == 'horizontal':
+                # Check if the letter in the word overlaps with an existing letter that doesn't match the letter in the word
+                if self.grid[wordObject.yposition][wordObject.xposition + i] != '' and self.grid[wordObject.yposition][wordObject.xposition + i] != wordObject.text[i]:
+                    return False   
+            # If the word is vertical:
+            else:
+                # Check if the letter in the word overlaps with an existing letter that doesn't match the letter in the word
+                if self.grid[wordObject.yposition + i][wordObject.xposition] != '' and self.grid[wordObject.yposition + i][wordObject.xposition] != wordObject.text[i]:
+                    return False
+        # If the word doesn't overlap any existing words, or if the overlapping letters match, return true
+        return True
+                
+
     # Add a word to the crossword
     def addWord(self, wordObject):
+        '''Add a word to the crossword.
+        Returns true if the word was added, or false if the word could not be added.'''
 
         # If this is the first word to be added:
-        if self.numWords == 0:
+        if self.currentIndex == 0:
 
             # Randomly choose a direction for the word
             #wordObject.direction = choice['horizontal', 'vertical']
@@ -80,6 +103,9 @@ class Crossword:
             # Increment the number of words
             self.numWords += 1
 
+            # Increment the current index
+            self.currentIndex += 1
+
             # Add the word to the list of words added
             self.wordsAdded.append(wordObject)
 
@@ -93,14 +119,23 @@ class Crossword:
         # If this is not the first word to be added:
         else:
 
+            # Create a deep copy of the grid
+            gridCopy = deepcopy(self.grid)
+
+            # Create copies of the width and height
+            widthCopy = self.width
+            heightCopy = self.height
+
             # Find all of the possible intersections between this word and the words already in the grid
             for existingWordObject in self.wordsAdded:
                 intersections = self.findIntersections(wordObject, existingWordObject)
-                print(intersections)
+                
+                # Testing - print the intersections
+                #print(intersections)
 
-                # If there are no intersections, return false to indicate that the word was not added
+                # If there are no intersections, continue to try the next word
                 if len(intersections) == 0:
-                    return False
+                    continue
                 
                 # If there are intersections, try to add the word to the grid
                 else:
@@ -170,12 +205,31 @@ class Crossword:
                                 # Update the height of the grid
                                 self.height += rowsToAdd
 
-                            # Write the word to the grid
-                            for i in range(wordObject.length):
-                                self.grid[wordObject.yposition + i][wordObject.xposition] = wordObject.text[i]
+                            # Check overlap with existing words
+                            # If the overlap is valid, add the word to the grid
+                            if self.checkOverlaps(wordObject):
 
-                            # Add the word to the list of words added
-                            self.wordsAdded.append(wordObject)
+                                # Write the word to the grid
+                                for i in range(wordObject.length):
+                                    self.grid[wordObject.yposition + i][wordObject.xposition] = wordObject.text[i]
+
+                                # Add the word to the list of words added
+                                self.wordsAdded.append(wordObject)
+
+                                # Increment the number of words
+                                self.numWords += 1
+
+                                # Increment the current index
+                                self.currentIndex += 1
+                            
+                                # Return true to indicate that the word was added
+                                return True
+                            
+                            # If the overlap is not valid, reset the grid and try the next position
+                            else:
+                                self.grid = deepcopy(gridCopy)
+                                self.width = widthCopy
+                                self.height = heightCopy
 
                     # If the existing word is vertical:
                     else:
@@ -235,28 +289,35 @@ class Crossword:
                                 # Update the width of the grid
                                 self.width += columnsToAdd
 
-                            # Write the word to the grid
-                            for i in range(wordObject.length):
-                                self.grid[wordObject.yposition][wordObject.xposition + i] = wordObject.text[i]
+                            # Check overlap with existing words
+                            # If the overlap is valid, add the word to the grid
+                            if self.checkOverlaps(wordObject):
 
-                            # Add the word to the list of words in the crossword
-                            self.wordList.append(wordObject)
+                                # Write the word to the grid
+                                for i in range(wordObject.length):
+                                    self.grid[wordObject.yposition][wordObject.xposition + i] = wordObject.text[i]
 
-                            ###################### TESTING ######################
-                            # print the grid
-                            for row in self.grid:
-                                for letter in row:
-                                    if letter == "":
-                                        print(" ", end=" ")
-                                    else:
-                                        print(letter, end=" ")
-                                print()
-                            print()
-                            #####################################################
+                                # Add the word to the list of words added
+                                self.wordsAdded.append(wordObject)
 
-                return True                                  
+                                # Increment the number of words
+                                self.numWords += 1
 
+                                # Increment the current index
+                                self.currentIndex += 1
 
+                                # Return true to indicate that the word was added
+                                return True
+
+                            # If the overlap is not valid, reset the grid and try the next position
+                            else:
+                                self.grid = deepcopy(gridCopy)
+                                self.width = widthCopy
+                                self.height = heightCopy
+
+        # If no valid positions were found, return false
+        return False
+                             
     # Tool to look for intersections between words
     def findIntersections(self, word1, word2):
         '''Find all of the possible intersections between two words
@@ -273,17 +334,31 @@ class Crossword:
         # Return the list of intersections
         return intersections
 
+    # Print the grid
+    def printGrid(self):
+        for row in self.grid:
+            for col in row:
+                if col == '':
+                    print (' ', end=' ')
+                else:
+                    print(col, end=' ')
+            print()
+
+
+
+
 testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
 # Add the first word from the crossword object to the grid
 testCwd.addWord(testCwd.wordList[0])
+testCwd.printGrid()
 testCwd.addWord(testCwd.wordList[1])
-for row in testCwd.grid:
-    for letter in row:
-        if letter == '':
-            print(' ', end=' ')
-        else:
-            print(letter, end=' ')
-    print()
+testCwd.printGrid()
+testCwd.addWord(testCwd.wordList[2])
+testCwd.printGrid()
+testCwd.addWord(testCwd.wordList[3])
+testCwd.printGrid()
+testCwd.addWord(testCwd.wordList[4])
+testCwd.printGrid()
 
-# Note - multiple possible intersections currently rendering on the same line, thus repeated letters.
-# TODO - Not currently moving across correctly on the final word in the example.
+
+# TODO - Intersections at the top of the grid currently misaligned - why?
