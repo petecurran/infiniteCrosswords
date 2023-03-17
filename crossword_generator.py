@@ -29,7 +29,7 @@ class Word:
 
 # Generate a list of Word objects from testWords
 wordsToInclude = []
-for word in curatedWords:
+for word in testWords:
     wordsToInclude.append(Word(word, None, None, None))
 
 # Crossword class
@@ -348,17 +348,9 @@ class Crossword:
 
 
 testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
-# Add the first word from the crossword object to the grid
-testCwd.addWord(testCwd.wordList[0])
+#Test all words in the list
+for word in testCwd.wordList:
+    testCwd.addWord(word)
 testCwd.printGrid()
-testCwd.addWord(testCwd.wordList[1])
-testCwd.printGrid()
-testCwd.addWord(testCwd.wordList[2])
-testCwd.printGrid()
-testCwd.addWord(testCwd.wordList[3])
-testCwd.printGrid()
-testCwd.addWord(testCwd.wordList[4])
-testCwd.printGrid()
-
 
 # TODO - Intersections at the top of the grid currently misaligned - why?
