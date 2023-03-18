@@ -42,23 +42,83 @@ class Crossword:
         self.height = height
         self.wordsAdded = wordsAdded
 
-    def checkOverlaps(self, wordObject):
+    def checkOverlaps(self, wordObject, intersectionIndex):
         '''Check if the word overlaps any existing words in the grid.
         Returns true if the word doesn't overlap any existing words, or if the overlapping letters match.
         Returns false otherwise.'''
 
+        # Record the index of letters that overlap with existing letters
+        overlappingIndexes = [intersectionIndex]
+
         # Check if the word overlaps any existing words in the grid
-        for i in range(wordObject.length):
-            # If the word is horizontal:
-            if wordObject.direction == 'horizontal':
+        # If the word is horizontal:
+        if wordObject.direction == 'horizontal':
+            for i in range(wordObject.length):
                 # Check if the letter in the word overlaps with an existing letter that doesn't match the letter in the word
                 if self.grid[wordObject.yposition][wordObject.xposition + i] != '' and self.grid[wordObject.yposition][wordObject.xposition + i] != wordObject.text[i]:
-                    return False   
-            # If the word is vertical:
-            else:
+                    return False
+
+                # Create a list of indexes that overlap with existing letters, excluding the index of the intersection
+                if self.grid[wordObject.yposition][wordObject.xposition + i] == wordObject.text[i] and i != intersectionIndex:
+                    overlappingIndexes.append(i)
+
+            # Check if the word overlaps with other characters to create invalid words.
+            # If the word is not on the final row, check the row below for overlapping letters
+            if wordObject.yposition < self.height - 1:
+                for i in range(wordObject.length):
+                    if self.grid[wordObject.yposition + 1][wordObject.xposition + i] != '' and i not in overlappingIndexes:
+                        return False
+                    
+            # If the word is not on the first row, check the row above for overlapping letters
+            if wordObject.yposition > 0:
+                for i in range(wordObject.length):
+                    if self.grid[wordObject.yposition - 1][wordObject.xposition + i] != '' and i not in overlappingIndexes:
+                        return False
+                    
+            # If the word does not begin in the first column, check the column to the left for overlapping letters
+            if wordObject.xposition > 0:
+                if self.grid[wordObject.yposition][wordObject.xposition - 1] != '':
+                    return False
+            
+            # If the word does not end in the last column, check the column to the right for overlapping letters
+            if wordObject.xposition + wordObject.length < self.width:
+                if self.grid[wordObject.yposition][wordObject.xposition + wordObject.length] != '':
+                    return False
+
+        # If the word is vertical:
+        else:
+            for i in range(wordObject.length):
                 # Check if the letter in the word overlaps with an existing letter that doesn't match the letter in the word
                 if self.grid[wordObject.yposition + i][wordObject.xposition] != '' and self.grid[wordObject.yposition + i][wordObject.xposition] != wordObject.text[i]:
                     return False
+                
+                # Create a list of indexes that overlap with existing letters, excluding the index of the intersection
+                if self.grid[wordObject.yposition + i][wordObject.xposition] == wordObject.text[i] and i != intersectionIndex:
+                    overlappingIndexes.append(i)
+
+                # Check if the word overlaps with other characters to create invalid words.
+                # If the word is not on the final column, check the column to the right for overlapping letters
+                if wordObject.xposition < self.width - 1:
+                    for i in range(wordObject.length):
+                        if self.grid[wordObject.yposition + i][wordObject.xposition + 1] != '' and i not in overlappingIndexes:
+                            return False
+                
+                # If the word is not on the first column, check the column to the left for overlapping letters
+                if wordObject.xposition > 0:
+                    for i in range(wordObject.length):
+                        if self.grid[wordObject.yposition + i][wordObject.xposition - 1] != '' and i not in overlappingIndexes:
+                            return False
+                
+                # If the word does not begin in the first row, check the row above for overlapping letters
+                if wordObject.yposition > 0:
+                    if self.grid[wordObject.yposition - 1][wordObject.xposition] != '':
+                        return False
+                
+                # If the word does not end in the last row, check the row below for overlapping letters
+                if wordObject.yposition + wordObject.length < self.height:
+                    if self.grid[wordObject.yposition + wordObject.length][wordObject.xposition] != '':
+                        return False
+
         # If the word doesn't overlap any existing words, or if the overlapping letters match, return true
         return True
                 
@@ -209,7 +269,8 @@ class Crossword:
 
                             # Check overlap with existing words
                             # If the overlap is valid, add the word to the grid
-                            if self.checkOverlaps(wordObject):
+                            # Sends the index of the new word's intersection with the old word.
+                            if self.checkOverlaps(wordObject, intersection[0]):
 
                                 # Write the word to the grid
                                 for i in range(wordObject.length):
@@ -294,7 +355,8 @@ class Crossword:
 
                             # Check overlap with existing words
                             # If the overlap is valid, add the word to the grid
-                            if self.checkOverlaps(wordObject):
+                            # Sends the index of the new word's intersection with the old word.
+                            if self.checkOverlaps(wordObject, intersection[0]):
 
                                 # Write the word to the grid
                                 for i in range(wordObject.length):
