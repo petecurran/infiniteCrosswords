@@ -12,6 +12,8 @@ testWords = [
     'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
 ]
 
+removedWords = ['']
+
 # Curated test data
 curatedWords = ["ABCD", "GFED", "JIHG", "MAJKKA", "TIX"]
 
@@ -119,13 +121,6 @@ class Crossword:
         # If this is not the first word to be added:
         else:
 
-            # Create a deep copy of the grid
-            gridCopy = deepcopy(self.grid)
-
-            # Create copies of the width and height
-            widthCopy = self.width
-            heightCopy = self.height
-
             # Find all of the possible intersections between this word and the words already in the grid
             for existingWordObject in self.wordsAdded:
                 intersections = self.findIntersections(wordObject, existingWordObject)
@@ -139,6 +134,17 @@ class Crossword:
                 
                 # If there are intersections, try to add the word to the grid
                 else:
+
+                    # Backup the key variables in case we need to revert to the previous state
+                    # Create a deep copy of the grid
+                    gridCopy = deepcopy(self.grid)
+
+                    # Create copies of the width and height
+                    widthCopy = self.width
+                    heightCopy = self.height
+
+                    # Create a deep copy of the words added
+                    wordsAddedCopy = deepcopy(self.wordsAdded)
 
                     # If the existing word is horizontal:
                     if existingWordObject.direction == 'horizontal':
@@ -182,9 +188,9 @@ class Crossword:
                                             else:
                                                 self.grid[row] = self.grid[row-1]
 
-                                    # Update the y position of the existing word
-                                    # TODO - we need to update ALL existing words
-                                    existingWordObject.yposition += rowsToMove
+                                    # Update the y position of all existing words
+                                    for word in self.wordsAdded:
+                                        word.yposition += rowsToMove
 
                                     # Update the y position of the word
                                     wordObject.yposition = 0
@@ -230,6 +236,7 @@ class Crossword:
                                 self.grid = deepcopy(gridCopy)
                                 self.width = widthCopy
                                 self.height = heightCopy
+                                self.wordsAdded = deepcopy(wordsAddedCopy)
 
                     # If the existing word is vertical:
                     else:
@@ -265,9 +272,9 @@ class Crossword:
                                     # Update the width of the grid
                                     self.width += columnsToMove
 
-                                    # Update the x position of the existing word
-                                    # TODO - we need to update ALL existing words
-                                    existingWordObject.xposition += columnsToMove
+                                    # Update the x position of all existing words
+                                    for word in self.wordsAdded:
+                                        word.xposition += columnsToMove
 
                                     # Update the x position of the word
                                     wordObject.xposition = 0
@@ -314,6 +321,7 @@ class Crossword:
                                 self.grid = deepcopy(gridCopy)
                                 self.width = widthCopy
                                 self.height = heightCopy
+                                self.wordsAdded = deepcopy(wordsAddedCopy)
 
         # If no valid positions were found, return false
         return False
@@ -351,6 +359,7 @@ testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
 #Test all words in the list
 for word in testCwd.wordList:
     testCwd.addWord(word)
-testCwd.printGrid()
+    testCwd.printGrid()
+    print("-"*50)
 
 # TODO - Intersections at the top of the grid currently misaligned - why?
