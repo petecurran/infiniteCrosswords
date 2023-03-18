@@ -3,16 +3,17 @@
 
 # Import deepcopy to make copies of lists
 from copy import deepcopy
-from random import choice
+from random import choice, shuffle
 
 # Test data - a list of words from FFVIII
 testWords = [
     'SQUALL', 'BALAMB', 'SHIVA', 'ULTIMECIA', 'GUNBLADE', 'DOLLET', 'SEED',
-    'SEIFER', 'ADEL', 'GALBADIA', 'JUNCTION', 'AIRSHIP', 'TIMECOMPRESSION',
+    'SEIFER', 'GALBADIA', 'JUNCTION', 'AIRSHIP', 'TIMECOMPRESSION',
     'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
 ]
 
-removedWords = ['']
+#
+shuffle(testWords)
 
 # Curated test data
 curatedWords = ["ABCD", "GFED", "JIHG", "MAJKKA", "TIX"]
@@ -28,11 +29,6 @@ class Word:
         self.yposition = yposition
         self.direction = direction
         self.length = len(text)
-
-# Generate a list of Word objects from testWords
-wordsToInclude = []
-for word in testWords:
-    wordsToInclude.append(Word(word, None, None, None))
 
 # Crossword class
 class Crossword:
@@ -332,6 +328,11 @@ class Crossword:
         Returns a list of tuples, each tuple containing the position of the intersection in each word
         The first element in the tuple is the position in word1, the second element is the position in word2.
         Under normal use this is (Position in the new word, position in the existing word)'''
+
+        # Validation - Check that the words are in different directions
+        if word1.direction == word2.direction:
+            return []
+
         # Find all of the possible intersections between letters in the two words
         intersections = []
         for wordOneLetter in range(len(word1.text)):
@@ -354,6 +355,10 @@ class Crossword:
 
 
 
+# Generate a list of Word objects from testWords
+wordsToInclude = []
+for word in testWords:
+    wordsToInclude.append(Word(word, None, None, None))
 
 testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
 #Test all words in the list
