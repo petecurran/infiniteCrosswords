@@ -12,7 +12,10 @@ testWords = [
     'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
 ]
 
-#
+# A specific set to test vertical alignment
+bugFixWords = ['GUNBLADE', 'ESTHAR', 'BALAMB', 'JUNCTION', 'AIRSHIP', 'PUZZLEBOSS', 'CIDKRAMER', 'ULTIMECIA', 'SHIVA', 'SEIFER', 'TIMECOMPRESSION', 'DOLLET', 'TRIPLE', 'RINOA', 'SQUALL', 'ZELL', 'SEED', 'GALBADIA', 'IRVINE']
+
+
 shuffle(testWords)
 
 # Curated test data
@@ -221,7 +224,7 @@ class Crossword:
                             else:
                                 # If the y position of the existing word is lower than the intersection with the second word,
                                 # We need to move the grid down to make room for the word
-                                if existingWordObject.yposition < intersection [0]:
+                                if existingWordObject.yposition < intersection [0]: 
                                     
                                     # Calculate the number of rows we need to move the grid down
                                     rowsToMove = intersection[0] - existingWordObject.yposition
@@ -253,7 +256,7 @@ class Crossword:
 
                                 # Otherwise, calculate the y position of the word using the intersection.
                                 else:
-                                    wordObject.yposition = existingWordObject.yposition - intersection[1]
+                                    wordObject.yposition = existingWordObject.yposition - intersection[0] # This line was causing the vertical words to misalign
 
                             # Check if we need to make the grid taller to make room for the new word
                             if wordObject.yposition + wordObject.length > self.height:
@@ -429,4 +432,5 @@ for word in testCwd.wordList:
     testCwd.printGrid()
     print("-"*50)
 
-# TODO - Intersections at the top of the grid currently misaligned - why?
+# TODO - Sometimes wildly offsets vertical words - or loses letters!
+# Somehow negative y positions are being generated
