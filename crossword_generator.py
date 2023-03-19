@@ -12,17 +12,11 @@ testWords = [
     'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
 ]
 
-# A specific set to test vertical alignment
-bugFixWords = ['GUNBLADE', 'ESTHAR', 'BALAMB', 'JUNCTION', 'AIRSHIP', 'PUZZLEBOSS', 'CIDKRAMER', 'ULTIMECIA', 'SHIVA', 'SEIFER', 'TIMECOMPRESSION', 'DOLLET', 'TRIPLE', 'RINOA', 'SQUALL', 'ZELL', 'SEED', 'GALBADIA', 'IRVINE']
-
-
-shuffle(testWords)
+# Test data for alignment
+alignTest = ['IRVINE', 'TRIPLE', 'SHIVA', 'CIDKRAMER', 'GUNBLADE', 'ESTHAR', 'TIMECOMPRESSION', 'SEED', 'GALBADIA', 'RINOA', 'ULTIMECIA', 'AIRSHIP', 'ZELL', 'JUNCTION', 'PUZZLEBOSS', 'BALAMB', 'SQUALL', 'SEIFER', 'DOLLET']
 
 # Curated test data
 curatedWords = ["ABCD", "GFED", "JIHG", "MAJKKA", "TIX"]
-
-# A list to hold completed crosswords
-generatedCrosswords = []
 
 # Class to hold words and their positions in the crossword
 class Word:
@@ -32,6 +26,8 @@ class Word:
         self.yposition = yposition
         self.direction = direction
         self.length = len(text)
+        self.storedxposition = xposition
+        self.storedyposition = yposition
 
 # Crossword class
 class Crossword:
@@ -135,8 +131,8 @@ class Crossword:
         if self.currentIndex == 0:
 
             # Randomly choose a direction for the word
-            #wordObject.direction = choice['horizontal', 'vertical']
-            wordObject.direction = 'horizontal' #Testing
+            wordObject.direction = choice(['horizontal', 'vertical'])
+            #wordObject.direction = 'horizontal' #Testing
 
             # If the word is horizontal:
             if wordObject.direction == 'horizontal':
@@ -202,8 +198,14 @@ class Crossword:
                     widthCopy = self.width
                     heightCopy = self.height
 
-                    # Create a deep copy of the words added
-                    wordsAddedCopy = deepcopy(self.wordsAdded)
+                    # Backup the current position of the existing word
+                    existingWordXPosition = existingWordObject.xposition
+                    existingWordYPosition = existingWordObject.yposition
+
+                    # Backup the position of all of the previous words in case we need to revert to the previous state
+                    for word in self.wordsAdded:
+                        word.storedxposition = word.xposition
+                        word.storedyposition = word.yposition
 
                     # If the existing word is horizontal:
                     if existingWordObject.direction == 'horizontal':
@@ -215,6 +217,9 @@ class Crossword:
                         for intersection in intersections:
                             # Set the x position to the x position of the intersection + the x position of the existing word
                             wordObject.xposition = intersection[1] + existingWordObject.xposition
+
+                            # Set the y position of the word object to 0 in case it was set to a different value in a previous iteration
+                            wordObject.yposition = 0
 
                             # If the intersection is at the start of the word, set the y position to the y position of the existing word
                             if intersection[0] == 0:
@@ -296,7 +301,10 @@ class Crossword:
                                 self.grid = deepcopy(gridCopy)
                                 self.width = widthCopy
                                 self.height = heightCopy
-                                self.wordsAdded = deepcopy(wordsAddedCopy)
+                                existingWordObject.xposition = existingWordXPosition
+                                existingWordObject.yposition = existingWordYPosition
+                                for word in self.wordsAdded:
+                                    word.yposition = word.storedyposition
 
                     # If the existing word is vertical:
                     else:
@@ -308,6 +316,9 @@ class Crossword:
                         for intersection in intersections:
                             # Set the y position to the y position of the intersection + the y position of the existing word
                             wordObject.yposition = intersection[1] + existingWordObject.yposition
+
+                            # Set the x position to 0 in case it was set to a value in the previous iteration
+                            wordObject.xposition = 0
 
                             # If the intersection is at the start of the word, set the x position to the x position of the existing word
                             if intersection[0] == 0:
@@ -382,7 +393,11 @@ class Crossword:
                                 self.grid = deepcopy(gridCopy)
                                 self.width = widthCopy
                                 self.height = heightCopy
-                                self.wordsAdded = deepcopy(wordsAddedCopy)
+                                existingWordObject.xposition = existingWordXPosition
+                                existingWordObject.yposition = existingWordYPosition
+
+                                for word in self.wordsAdded:
+                                    word.xposition = word.storedxposition
 
         # If no valid positions were found, return false
         return False
@@ -418,19 +433,55 @@ class Crossword:
                     print(col, end=' ')
             print()
 
-
+### TESTING AREA ###
 
 # Generate a list of Word objects from testWords
 wordsToInclude = []
-for word in testWords:
+for word in alignTest:
     wordsToInclude.append(Word(word, None, None, None))
 
+def testCrosswords():
+
+    # A list to hold completed crosswords
+    generatedCrosswords = []
+
+    # Choose how many crosswords to generate
+    numCrosswords = 20
+
+    # Generate the crosswords
+    for i in range(numCrosswords):
+        # Create a new crossword object
+        attempt = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
+
+        # Shuffle the list of words
+        shuffle (attempt.wordList)
+
+        # Attempt to add all of the words in the list
+        for word in attempt.wordList:
+            attempt.addWord(word)
+
+        # Add the completed crossword to the list of generated crosswords
+        generatedCrosswords.append(attempt)
+
+    # Sort the crosswords by number of words, with the most words first
+    generatedCrosswords.sort(key=lambda x: x.numWords, reverse=True)
+
+    # Print the three largest crosswords
+    for i in range(3):
+        generatedCrosswords[i].printGrid()
+        print("~"*50)
+        print("Number of words:", generatedCrosswords[i].numWords)
+        print("~"*50)
+
+# Run the test
+testCrosswords()
+
+'''
 testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
-#Test all words in the list
 for word in testCwd.wordList:
     testCwd.addWord(word)
-    testCwd.printGrid()
-    print("-"*50)
+testCwd.printGrid()
+'''
 
-# TODO - Sometimes wildly offsets vertical words - or loses letters!
-# Somehow negative y positions are being generated
+# The current problem is that the x (and y?) position of the existing words is incorrect
+# When new words are added. They are being incremented somehow when they shouldn't.
