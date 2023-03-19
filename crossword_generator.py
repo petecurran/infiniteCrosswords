@@ -18,16 +18,65 @@ alignTest = ['IRVINE', 'TRIPLE', 'SHIVA', 'CIDKRAMER', 'GUNBLADE', 'ESTHAR', 'TI
 # Curated test data
 curatedWords = ["ABCD", "GFED", "JIHG", "MAJKKA", "TIX"]
 
+# Generator class
+class CrosswordGenerator:
+    '''Generates crosswords and returns the best option.'''
+    def __init__(self, wordsToInclude, numberOfAttempts):
+        self.wordsToInclude = wordsToInclude
+        self.numberOfAttempts = numberOfAttempts
+        self.words = []
+        self.generatedCrosswords = []
+
+    def setUpWords(self):
+        for word in self.wordsToInclude:
+            # Create a Word object for each word
+            self.words.append(Word(word, None, None, None))
+
+    def generateCrossword(self):
+        self.setUpWords()
+        for i in range(self.numberOfAttempts):
+            # Create a new crossword
+            attempt = Crossword([], self.words, 0, 0, 0, 0, [])
+            # Shuffle the list of words
+            shuffle(attempt.wordList)
+
+            # Attempt to add all of the words in the list
+            for word in attempt.wordList:
+                attempt.addWord(word)
+            
+            # If there are any words that failed to add, try to add them again
+            if attempt.wordsFailedToAdd:
+                shuffle(attempt.wordsAdded)
+                for word in attempt.wordsFailedToAdd:
+                    # Only try to add the word again if it hasn't been attempted 3 times
+                    if word.attemptsToAdd < 3:
+                        attempt.addWord(word)
+
+            # Add the crossword to the list of generated crosswords
+            self.generatedCrosswords.append(attempt)
+        
+        # Sort the list of generated crosswords by the number of words added
+        self.generatedCrosswords.sort(key=lambda x: x.numWords, reverse=True)
+
+        # Testing - print the best 3 crosswords
+        for i in range(3):
+            self.generatedCrosswords[i].printGrid()
+            print("Number of words:",self.generatedCrosswords[i].numWords)
+            print("~"*50)
+
+        return self.generatedCrosswords[0]
+
 # Class to hold words and their positions in the crossword
 class Word:
     def __init__(self, text, xposition, yposition, direction):
-        self.text = text
-        self.xposition = xposition
-        self.yposition = yposition
-        self.direction = direction
+        self.text = text # The text of the word
+        self.xposition = xposition # The x position of the first letter of the word
+        self.yposition = yposition # The y position of the first letter of the word
+        self.direction = direction # The direction of the word - 'horizontal' or 'vertical'
         self.length = len(text)
-        self.storedxposition = xposition
-        self.storedyposition = yposition
+        self.storedxposition = xposition # Store the original x position so we can reset it if the word fails to add
+        self.storedyposition = yposition # Store the original y position so we can reset it if the word fails to add
+        self.attemptsToAdd = 0 # Number of times the word has been attempted to be added
 
 # Crossword class
 class Crossword:
@@ -40,6 +89,7 @@ class Crossword:
         self.width = width
         self.height = height
         self.wordsAdded = wordsAdded
+        self.wordsFailedToAdd = []
 
     def checkOverlaps(self, wordObject, intersectionIndex):
         '''Check if the word overlaps any existing words in the grid.
@@ -399,7 +449,9 @@ class Crossword:
                                 for word in self.wordsAdded:
                                     word.xposition = word.storedxposition
 
-        # If no valid positions were found, return false
+        # If no valid positions were found, increment the attempts on the word and add it to the list of words that failed to add
+        wordObject.attemptsToAdd += 1        
+        self.wordsFailedToAdd.append(wordObject)
         return False
                              
     # Tool to look for intersections between words
@@ -436,17 +488,18 @@ class Crossword:
 ### TESTING AREA ###
 
 # Generate a list of Word objects from testWords
-wordsToInclude = []
-for word in alignTest:
-    wordsToInclude.append(Word(word, None, None, None))
+#wordsToInclude = []
+#for word in alignTest:
+#    wordsToInclude.append(Word(word, None, None, None))
 
+# Test method to generate crosswords without generator.
 def testCrosswords():
 
     # A list to hold completed crosswords
     generatedCrosswords = []
 
     # Choose how many crosswords to generate
-    numCrosswords = 10000
+    numCrosswords = 20
 
     # Generate the crosswords
     for i in range(numCrosswords):
@@ -474,14 +527,10 @@ def testCrosswords():
         print("~"*50)
 
 # Run the test
-testCrosswords()
+#testCrosswords()
 
-'''
-testCwd = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
-for word in testCwd.wordList:
-    testCwd.addWord(word)
-testCwd.printGrid()
-'''
-
-# The current problem is that the x (and y?) position of the existing words is incorrect
-# When new words are added. They are being incremented somehow when they shouldn't.
+# Generate a crossword using the generator
+generator = CrosswordGenerator(testWords,20)
+result = generator.generateCrossword()
+result.printGrid()
+print("Best option number of words:",result.numWords)
