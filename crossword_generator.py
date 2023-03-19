@@ -446,7 +446,7 @@ def testCrosswords():
     generatedCrosswords = []
 
     # Choose how many crosswords to generate
-    numCrosswords = 20
+    numCrosswords = 10000
 
     # Generate the crosswords
     for i in range(numCrosswords):
