@@ -59,10 +59,10 @@ class CrosswordGenerator:
         self.generatedCrosswords.sort(key=lambda x: x.numWords, reverse=True)
 
         # Testing - print the best 3 crosswords
-        for i in range(3):
+        '''for i in range(3):
             self.generatedCrosswords[i].printGrid()
             print("Number of words:",self.generatedCrosswords[i].numWords)
-            print("~"*50)
+            print("~"*50)'''
 
         return self.generatedCrosswords[0]
 
@@ -70,6 +70,7 @@ class CrosswordGenerator:
 class Word:
     def __init__(self, text, xposition, yposition, direction):
         self.text = text # The text of the word
+        self.clueNumber = None # The number of the clue for the word
         self.xposition = xposition # The x position of the first letter of the word
         self.yposition = yposition # The y position of the first letter of the word
         self.direction = direction # The direction of the word - 'horizontal' or 'vertical'
@@ -475,6 +476,46 @@ class Crossword:
         # Return the list of intersections
         return intersections
 
+    # Tool to assign clue numbers to wordsAdded
+    def assignClueNumbers(self):
+        '''Assigns clue numbers to the words successfully added.
+        Traverses the grid from left to right, top to bottom.
+        Starts at 1 and increments by 1 for each word added.
+        Horizontal and vertical clues with the same coordinates are assigned the same clue number.'''
+
+        # Set the clue number to 0
+        clueNumber = 0
+
+        # Sort the wordsAdded list by y position, then by x position, then by direction with horizontal words first
+        self.wordsAdded.sort(key=lambda word: (word.yposition, word.xposition, word.direction == 'horizontal'), reverse=False)
+
+        # Variable to store the last y and x positions so we can handle words with the same coordinates
+        lastYPosition = -1
+        lastXPosition = -1
+
+        # Assign clue numbers to the words, in order.
+        for word in self.wordsAdded:
+
+            # If the word is at the same coordinates as the last word, assign it the same clue number
+            if word.yposition == lastYPosition and word.xposition == lastXPosition:
+                word.clueNumber = clueNumber
+            
+            else:
+                # Increment the clue number
+                clueNumber += 1
+
+                # Assign the clue number to the word
+                word.clueNumber = clueNumber
+
+            # Update the last y and x positions
+            lastYPosition = word.yposition
+            lastXPosition = word.xposition
+
+        # Testing - print the x and y positions of the wordsAdded list
+        '''for word in self.wordsAdded:
+            print(word.clueNumber, word.text, word.yposition, word.xposition)'''
+
+
     # Print the grid
     def printGrid(self):
         for row in self.grid:
@@ -533,4 +574,5 @@ def testCrosswords():
 generator = CrosswordGenerator(testWords,20)
 result = generator.generateCrossword()
 result.printGrid()
+result.assignClueNumbers()
 print("Best option number of words:",result.numWords)
