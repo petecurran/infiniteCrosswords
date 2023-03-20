@@ -571,8 +571,10 @@ def testCrosswords():
 #testCrosswords()
 
 # Generate a crossword using the generator
+'''
 generator = CrosswordGenerator(testWords,20)
 result = generator.generateCrossword()
 result.printGrid()
 result.assignClueNumbers()
 print("Best option number of words:",result.numWords)
+'''
