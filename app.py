@@ -1,13 +1,9 @@
-# Import the crossword class from crossword_generator
+from parseclues import parseClues
 from crossword_generator import CrosswordGenerator
-# Import the config file
 import config
-# Import the prompts file
 import prompts
-# Import the openai library
 import openai
-# Import the json library
-import json
+import time # For testing
 
 # Get the openai key from config.py
 openai.api_key = config.openAIKey
@@ -35,8 +31,6 @@ testWords = [
 generator = CrosswordGenerator(testWords, 2)
 crossword = generator.generateCrossword()
 crossword.printGrid()
-
-print(config.temp)
 '''
 
 print(response)
@@ -48,18 +42,31 @@ for line in responseList:
     print(line)
 
 content = response.choices[0].message.content
+clues = parseClues(content)
+print(clues)
 
-# Find the start of the data marked by [
-start = content.index('[')
-# Find the end of the data marked by ]
-end = content.index(']', start+1)
-# Get the data, including the brackets
-data = content[start:end+1]
+generatedClues = []
 
-# Load the data as JSON
-data = json.loads(data)
+for clue in clues:
+    # If there's a hyphen in the clue, remove it.
+    if '-' in clue['word']:
+        clue['word'] = clue['word'].replace('-', '')
+    # If there's a space in the clue, remove it.
+    if ' ' in clue['word']:
+        clue['word'] = clue['word'].replace(' ', '')
+    
+    # Add the clue to the list of generated clues
+    generatedClues.append(clue['word'])
 
-# Print the clues
-for clue in data:
-    print("Word:", clue['word'], "Clue:",clue['clue'])
+# Create a crossword generator object
 
+# Start a timer
+start = time.time()
+generator = CrosswordGenerator(generatedClues, 1000)
+crossword = generator.generateCrossword()
+end = time.time()
+# Print the time taken in minutes and seconds
+print("Time taken: {} minutes and {} seconds".format(int((end-start)/60), int((end-start)%60)))
+
+
+crossword.printGrid()
