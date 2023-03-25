@@ -6,11 +6,13 @@ import config
 import prompts
 # Import the openai library
 import openai
+# Import the json library
+import json
 
 # Get the openai key from config.py
 openai.api_key = config.openAIKey
 
-numClues = 20
+numClues = 40
 theme = input("What is the theme of the crossword?\n")
 
 # Test the openai call
@@ -18,7 +20,7 @@ response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
         {"role":"system","content":prompts.roleOne},
-        {"role":"user","content":str(numClues)},
+        {"role":"user","content":"Please supply {} clues.".format(str(numClues))},
         {"role":"user","content":"The topic for this crossword is '{}'.".format(theme)}
     ])
 
@@ -44,3 +46,20 @@ print(response)
 responseList = response.choices[0].message.content.splitlines()
 for line in responseList:
     print(line)
+
+content = response.choices[0].message.content
+
+# Find the start of the data marked by [
+start = content.index('[')
+# Find the end of the data marked by ]
+end = content.index(']', start+1)
+# Get the data, including the brackets
+data = content[start:end+1]
+
+# Load the data as JSON
+data = json.loads(data)
+
+# Print the clues
+for clue in data:
+    print("Word:", clue['word'], "Clue:",clue['clue'])
+
