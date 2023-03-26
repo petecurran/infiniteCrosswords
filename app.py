@@ -8,7 +8,7 @@ import time # For testing
 # Get the openai key from config.py
 openai.api_key = config.openAIKey
 
-numClues = 40
+numClues = 20
 theme = input("What is the theme of the crossword?\n")
 
 # Test the openai call
@@ -19,19 +19,6 @@ response = openai.ChatCompletion.create(
         {"role":"user","content":"Please supply {} clues.".format(str(numClues))},
         {"role":"user","content":"The topic for this crossword is '{}'.".format(theme)}
     ])
-
-'''
-testWords = [
-    'SQUALL', 'BALAMB', 'SHIVA', 'ULTIMECIA', 'GUNBLADE', 'DOLLET', 'SEED',
-    'SEIFER', 'GALBADIA', 'JUNCTION', 'AIRSHIP', 'TIMECOMPRESSION',
-    'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
-]
-
-# Create a crossword generator object
-generator = CrosswordGenerator(testWords, 2)
-crossword = generator.generateCrossword()
-crossword.printGrid()
-'''
 
 print(response)
 #print(response.choices[0].message.content)
@@ -62,11 +49,11 @@ for clue in clues:
 
 # Start a timer
 start = time.time()
-generator = CrosswordGenerator(generatedClues, 1000)
+generator = CrosswordGenerator(generatedClues, 5)
 crossword = generator.generateCrossword()
 end = time.time()
 # Print the time taken in minutes and seconds
 print("Time taken: {} minutes and {} seconds".format(int((end-start)/60), int((end-start)%60)))
-
-
 crossword.printGrid()
+print("Words added: {}".format(crossword.numWords))
+print("Intersections: {}".format(crossword.numberOfIntersections))

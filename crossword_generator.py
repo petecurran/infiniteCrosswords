@@ -1,22 +1,6 @@
-# Creates crosswords on any topic using the openAI API.
-# Pete Curran, 2023
-
 # Import deepcopy to make copies of lists
 from copy import deepcopy
 from random import choice, shuffle
-
-# Test data - a list of words from FFVIII
-testWords = [
-    'SQUALL', 'BALAMB', 'SHIVA', 'ULTIMECIA', 'GUNBLADE', 'DOLLET', 'SEED',
-    'SEIFER', 'GALBADIA', 'JUNCTION', 'AIRSHIP', 'TIMECOMPRESSION',
-    'RINOA', 'CIDKRAMER', 'ZELL', 'ESTHAR', 'IRVINE', 'TRIPLE', 'PUZZLEBOSS'
-]
-
-# Test data for alignment
-alignTest = ['IRVINE', 'TRIPLE', 'SHIVA', 'CIDKRAMER', 'GUNBLADE', 'ESTHAR', 'TIMECOMPRESSION', 'SEED', 'GALBADIA', 'RINOA', 'ULTIMECIA', 'AIRSHIP', 'ZELL', 'JUNCTION', 'PUZZLEBOSS', 'BALAMB', 'SQUALL', 'SEIFER', 'DOLLET']
-
-# Curated test data
-curatedWords = ["ABCD", "GFED", "JIHG", "MAJKKA", "TIX"]
 
 # Generator class
 class CrosswordGenerator:
@@ -91,6 +75,7 @@ class Crossword:
         self.height = height
         self.wordsAdded = wordsAdded
         self.wordsFailedToAdd = []
+        self.numberOfIntersections = 0
 
     def checkOverlaps(self, wordObject, intersectionIndex):
         '''Check if the word overlaps any existing words in the grid.
@@ -146,30 +131,34 @@ class Crossword:
                 if self.grid[wordObject.yposition + i][wordObject.xposition] == wordObject.text[i] and i != intersectionIndex:
                     overlappingIndexes.append(i)
 
-                # Check if the word overlaps with other characters to create invalid words.
-                # If the word is not on the final column, check the column to the right for overlapping letters
-                if wordObject.xposition < self.width - 1:
-                    for i in range(wordObject.length):
-                        if self.grid[wordObject.yposition + i][wordObject.xposition + 1] != '' and i not in overlappingIndexes:
-                            return False
-                
-                # If the word is not on the first column, check the column to the left for overlapping letters
-                if wordObject.xposition > 0:
-                    for i in range(wordObject.length):
-                        if self.grid[wordObject.yposition + i][wordObject.xposition - 1] != '' and i not in overlappingIndexes:
-                            return False
-                
-                # If the word does not begin in the first row, check the row above for overlapping letters
-                if wordObject.yposition > 0:
-                    if self.grid[wordObject.yposition - 1][wordObject.xposition] != '':
+            # Check if the word overlaps with other characters to create invalid words.
+            # If the word is not on the final column, check the column to the right for overlapping letters
+            if wordObject.xposition < self.width - 1:
+                for i in range(wordObject.length):
+                    if self.grid[wordObject.yposition + i][wordObject.xposition + 1] != '' and i not in overlappingIndexes:
                         return False
-                
-                # If the word does not end in the last row, check the row below for overlapping letters
-                if wordObject.yposition + wordObject.length < self.height:
-                    if self.grid[wordObject.yposition + wordObject.length][wordObject.xposition] != '':
+            
+            # If the word is not on the first column, check the column to the left for overlapping letters
+            if wordObject.xposition > 0:
+                for i in range(wordObject.length):
+                    if self.grid[wordObject.yposition + i][wordObject.xposition - 1] != '' and i not in overlappingIndexes:
                         return False
+            
+            # If the word does not begin in the first row, check the row above for overlapping letters
+            if wordObject.yposition > 0:
+                if self.grid[wordObject.yposition - 1][wordObject.xposition] != '':
+                    return False
+            
+            # If the word does not end in the last row, check the row below for overlapping letters
+            if wordObject.yposition + wordObject.length < self.height:
+                if self.grid[wordObject.yposition + wordObject.length][wordObject.xposition] != '':
+                    return False
 
-        # If the word doesn't overlap any existing words, or if the overlapping letters match, return true
+        # If the word doesn't overlap any existing words, or if the overlapping letters match,
+        # Update the number of intersections
+        self.numberOfIntersections += len(overlappingIndexes)
+
+        # Return true
         return True
                 
 
@@ -231,9 +220,6 @@ class Crossword:
             for existingWordObject in self.wordsAdded:
                 intersections = self.findIntersections(wordObject, existingWordObject)
                 
-                # Testing - print the intersections
-                #print(intersections)
-
                 # If there are no intersections, continue to try the next word
                 if len(intersections) == 0:
                     continue
@@ -327,7 +313,7 @@ class Crossword:
                                 self.height += rowsToAdd
 
                             # Check overlap with existing words
-                            # If the overlap is valid, add the word to the grid
+                            # If the overlap is valid, add the word to the grid. ---> Also counts the total number of overlaps.
                             # Sends the index of the new word's intersection with the old word.
                             if self.checkOverlaps(wordObject, intersection[0]):
 
@@ -419,7 +405,7 @@ class Crossword:
                                 self.width += columnsToAdd
 
                             # Check overlap with existing words
-                            # If the overlap is valid, add the word to the grid
+                            # If the overlap is valid, add the word to the grid. ---> Also counts the total number of overlaps.
                             # Sends the index of the new word's intersection with the old word.
                             if self.checkOverlaps(wordObject, intersection[0]):
 
@@ -525,13 +511,6 @@ class Crossword:
                 else:
                     print(col, end=' ')
             print()
-
-### TESTING AREA ###
-
-# Generate a list of Word objects from testWords
-#wordsToInclude = []
-#for word in alignTest:
-#    wordsToInclude.append(Word(word, None, None, None))
 
 # Test method to generate crosswords without generator.
 def testCrosswords():
