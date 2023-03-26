@@ -10,6 +10,7 @@ class CrosswordGenerator:
         self.numberOfAttempts = numberOfAttempts
         self.words = []
         self.generatedCrosswords = []
+        self.attemptedShuffles = []
 
     def setUpWords(self):
         for word in self.wordsToInclude:
@@ -23,6 +24,12 @@ class CrosswordGenerator:
             attempt = Crossword([], self.words, 0, 0, 0, 0, [])
             # Shuffle the list of words
             shuffle(attempt.wordList)
+
+            # Check if we've already attempted this shuffle
+            if attempt.wordList in self.attemptedShuffles:
+                continue
+            else:
+                self.attemptedShuffles.append(attempt.wordList)
 
             # Attempt to add all of the words in the list
             for word in attempt.wordList:
@@ -40,7 +47,10 @@ class CrosswordGenerator:
             self.generatedCrosswords.append(attempt)
         
         # Sort the list of generated crosswords by the number of words added
-        self.generatedCrosswords.sort(key=lambda x: x.numWords, reverse=True)
+        #self.generatedCrosswords.sort(key=lambda x: x.numWords, reverse=True)
+
+        # Sort the list of generated crosswords by the number of intersections, then number of words, then low difference between height and width
+        self.generatedCrosswords.sort(key=lambda x: (x.numberOfIntersections, x.numWords, abs(x.height - x.width)), reverse=True)
 
         # Testing - print the best 3 crosswords
         '''for i in range(3):
