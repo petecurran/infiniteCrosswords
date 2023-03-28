@@ -49,7 +49,7 @@ for clue in clues:
 
 # Start a timer
 start = time.time()
-generator = CrosswordGenerator(generatedClues, 500)
+generator = CrosswordGenerator(generatedClues, 20)
 crossword = generator.generateCrossword()
 end = time.time()
 # Print the time taken in minutes and seconds

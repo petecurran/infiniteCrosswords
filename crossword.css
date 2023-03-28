@@ -1,0 +1,14 @@
+.crossword {
+    border: 1px solid #000;
+}
+
+.cluenumber {
+    font-size: 10pt;
+    color: #999;
+    vertical-align: super;
+}
+
+.crosswordcell {
+    width:40px;
+    height:40px;
+}
