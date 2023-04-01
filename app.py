@@ -1,6 +1,6 @@
 from parseclues import parseClues
 from crossword_generator import CrosswordGenerator
-from print_generator import crosswordPrinter
+from print_generator import crosswordPrinter, generateImage
 import config
 import prompts
 import openai
@@ -9,7 +9,7 @@ import time # For testing
 # Get the openai key from config.py
 openai.api_key = config.openAIKey
 
-numClues = 40
+numClues = 10
 theme = input("What is the theme of the crossword?\n")
 
 # Test the openai call
@@ -59,4 +59,6 @@ crossword.printGrid()
 crossword.printBlankGrid()
 print("Words added: {}".format(crossword.numWords))
 print("Intersections: {}".format(crossword.numberOfIntersections))
-crosswordPrinter(crossword, theme)
+img = generateImage(crossword)
+img.show()
+img.save("test.png")

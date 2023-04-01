@@ -1,5 +1,5 @@
 import os
-
+from PIL import Image, ImageDraw, ImageFont
 
 def crosswordPrinter (crossword, theme):
     '''Generates a HTML grid of the crossword provided for printing.'''
@@ -62,16 +62,36 @@ def crosswordPrinter (crossword, theme):
     # Open the output file in the default browser
     os.startfile(fileName)
 
-def pathTester():
+    return
 
-    # Get the current directory
-    currentDirectory = os.getcwd()
-
-    # Get the path to the template file
-    templatePath = os.path.join(currentDirectory, "infiniteCrosswords/template.html")
-
-    # Open the template file
-    with open(templatePath, "r") as template:
-        # Read the file
-        output = template.read()
-        print(output)
+def generateImage(crossword):
+    # Set up the image and drawing context
+    cell_size = 50
+    img_width = cell_size * crossword.width
+    img_height = cell_size * crossword.height
+    img = Image.new('RGB', (img_width, img_height), color='white')
+    draw = ImageDraw.Draw(img)
+    
+    # Set up the font for the clue numbers
+    font_size = int(cell_size * 0.4)
+    font = ImageFont.truetype('arial.ttf', font_size)
+    
+    # Draw the grid
+    for y, row in enumerate(crossword.blankGrid):
+        for x, cell in enumerate(row):
+            # Calculate the coordinates of the cell
+            cell_x = x * cell_size
+            cell_y = y * cell_size
+            
+            if cell == '':
+                # Draw a black cell
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='black')
+            elif cell == '_':
+                # Draw a white cell
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black')
+            elif cell.isdigit():
+                # Draw a white cell with the clue number
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black')
+                draw.text((cell_x + 5, cell_y + 5), cell, fill='black', font=font)
+                
+    return img
