@@ -9,7 +9,7 @@ import time # For testing
 # Get the openai key from config.py
 openai.api_key = config.openAIKey
 
-numClues = 10
+numClues = 40
 theme = input("What is the theme of the crossword?\n")
 
 # Test the openai call
@@ -21,39 +21,13 @@ response = openai.ChatCompletion.create(
         {"role":"user","content":"The topic for this crossword is '{}'.".format(theme)}
     ])
 
-print(response)
-#print(response.choices[0].message.content)
-
-# Turn the response into a list
-responseList = response.choices[0].message.content.splitlines()
-for line in responseList:
-    print(line)
-
 content = response.choices[0].message.content
 clues = parseClues(content)
 print(clues)
 
-generatedClues = []
-
-for clue in clues:
-    # If there's a hyphen in the clue, remove it.
-    if '-' in clue['word']:
-        clue['word'] = clue['word'].replace('-', '')
-    # If there's a space in the clue, remove it.
-    if ' ' in clue['word']:
-        clue['word'] = clue['word'].replace(' ', '')
-    # If there's an apostrophe in the clue, remove it.
-    if "'" in clue['word']:
-        clue['word'] = clue['word'].replace("'", '')
-    
-    # Add the clue to the list of generated clues
-    generatedClues.append(clue['word'])
-
-# Create a crossword generator object
-
 # Start a timer
 start = time.time()
-generator = CrosswordGenerator(generatedClues, 20)
+generator = CrosswordGenerator(clues, 500)
 crossword = generator.generateCrossword()
 end = time.time()
 # Print the time taken in minutes and seconds

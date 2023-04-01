@@ -4,3 +4,13 @@
     max-width: 100%;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
+
+.clue-list{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.clues-heading{
+    margin-top: 10px;;
+}

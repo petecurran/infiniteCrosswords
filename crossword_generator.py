@@ -15,7 +15,7 @@ class CrosswordGenerator:
     def setUpWords(self):
         for word in self.wordsToInclude:
             # Create a Word object for each word
-            self.words.append(Word(word, None, None, None))
+            self.words.append(Word(word[0], word[1], None, None, None))
 
     def generateCrossword(self):
         self.setUpWords()
@@ -55,6 +55,9 @@ class CrosswordGenerator:
         # Assign the clue numbers to the words
         self.generatedCrosswords[0].assignClueNumbers()
 
+        # Generate the clues for the best crossword
+        self.generatedCrosswords[0].createClueList()
+
         # Generate the blank grid for the best crossword
         self.generatedCrosswords[0].createBlankGrid()
 
@@ -88,6 +91,8 @@ class Crossword:
         self.wordsAdded = wordsAdded
         self.wordsFailedToAdd = []
         self.numberOfIntersections = 0
+        self.horizontalClues = []
+        self.verticalClues = []
 
     def checkOverlaps(self, wordObject, intersectionIndex):
         '''Check if the word overlaps any existing words in the grid.
@@ -509,9 +514,32 @@ class Crossword:
             lastYPosition = word.yposition
             lastXPosition = word.xposition
 
-        # Testing - print the x and y positions of the wordsAdded list
-        '''for word in self.wordsAdded:
-            print(word.clueNumber, word.text, word.yposition, word.xposition)'''
+    # Tool to create the clue list from the wordsAdded list
+    def createClueList(self):
+        '''Creates the list of clues from the wordsAdded list.
+        Each clue is a tuple containing the clue number, the clue text, and the length of the word in parentheses.'''
+        
+        # Create the lists to store the clues
+        horizontalClues = []
+        verticalClues = []
+
+        # Get all of the horizontal clues
+        for word in self.wordsAdded:
+            if word.direction == 'horizontal':
+                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.length)))
+            elif word.direction == 'vertical':
+                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.length)))
+
+        # Sort the horizontal clues low to high by clueNumber
+        horizontalClues.sort(key=lambda clue: clue[0], reverse=False)
+
+        # Sort the vertical clues low to high by clueNumber
+        verticalClues.sort(key=lambda clue: clue[0], reverse=False)
+
+        self.horizontalClues = horizontalClues
+        self.verticalClues = verticalClues
+
+        return
 
     # Tool to create the blank grid with clue numbers
     def createBlankGrid(self):
@@ -537,7 +565,6 @@ class Crossword:
                 else:
                     print(col, end=' ')
             print()
-
 
     # Print the blank grid
     def printBlankGrid(self):

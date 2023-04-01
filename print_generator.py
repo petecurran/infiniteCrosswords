@@ -42,9 +42,19 @@ def crosswordPrinter (crossword, theme):
 
     # Set the image tag to the image path
     imageTag = "<img src=\"{}\" alt=\"{}\" id=\"crossword-image\">".format(imagePath, theme)
-
+    
+    #Update the title
     titleTag = "<title>Infinite Crosswords - {}</title>".format(theme)
 
+    # Add a list element for each horizontal clue
+    horizontalClues = ""
+    for clue in crossword.horizontalClues:
+        horizontalClues += "<li>{}. {} {}</li>".format(clue[0], clue[1], clue[2])
+
+    # Add a list element for each vertical clue
+    verticalClues = ""
+    for clue in crossword.verticalClues:
+        verticalClues += "<li>{}. {} {}</li>".format(clue[0], clue[1], clue[2])
 
     # Open the template file
     with open(templatePath, "r") as template:
@@ -59,6 +69,12 @@ def crosswordPrinter (crossword, theme):
 
     # Replace the image tag with the image tag
     output = output.replace("<!--Image goes here-->", imageTag)
+
+    # Replace the horizontal clues with the horizontal clues
+    output = output.replace("<!--Horizontal clues go here-->", horizontalClues)
+
+    # Replace the vertical clues with the vertical clues
+    output = output.replace("<!--Vertical clues go here-->", verticalClues)
 
     # Set the output directory to the created_crosswords folder
     outputDirectory = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")
@@ -97,7 +113,7 @@ def generateImage(crossword):
             
             if cell == '':
                 # Draw a black cell
-                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='black')
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='#333333')
             elif cell == '_':
                 # Draw a white cell
                 draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black')

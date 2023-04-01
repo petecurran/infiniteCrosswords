@@ -12,9 +12,18 @@ def parseClues(inputFromAPI):
     # Load the data as JSON
     processedData = json.loads(data)
     
-    # Add each clue in the data to the clues list
+    # Create a 2D array of the clues, word then clue
     clues = []
     for clue in processedData:
-        clues.append(clue)
+        # If there's a hyphen in the clue, remove it.
+        if '-' in clue['word']:
+            clue['word'] = clue['word'].replace('-', '')
+        # If there's a space in the clue, remove it.
+        if ' ' in clue['word']:
+            clue['word'] = clue['word'].replace(' ', '')
+        # If there's an apostrophe in the clue, remove it.
+        if "'" in clue['word']:
+            clue['word'] = clue['word'].replace("'", '')
+        clues.append([clue['word'], clue['clue']])
 
     return clues
