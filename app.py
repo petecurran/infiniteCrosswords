@@ -1,5 +1,6 @@
 from parseclues import parseClues
 from crossword_generator import CrosswordGenerator
+from print_generator import crosswordPrinter
 import config
 import prompts
 import openai
@@ -55,5 +56,7 @@ end = time.time()
 # Print the time taken in minutes and seconds
 print("Time taken: {} minutes and {} seconds".format(int((end-start)/60), int((end-start)%60)))
 crossword.printGrid()
+crossword.printBlankGrid()
 print("Words added: {}".format(crossword.numWords))
 print("Intersections: {}".format(crossword.numberOfIntersections))
+crosswordPrinter(crossword, theme)

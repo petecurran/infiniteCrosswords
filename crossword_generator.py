@@ -52,11 +52,11 @@ class CrosswordGenerator:
         # Sort the list of generated crosswords by the number of intersections, then number of words, then low difference between height and width
         self.generatedCrosswords.sort(key=lambda x: (x.numberOfIntersections, x.numWords, abs(x.height - x.width)), reverse=True)
 
-        # Testing - print the best 3 crosswords
-        '''for i in range(3):
-            self.generatedCrosswords[i].printGrid()
-            print("Number of words:",self.generatedCrosswords[i].numWords)
-            print("~"*50)'''
+        # Assign the clue numbers to the words
+        self.generatedCrosswords[0].assignClueNumbers()
+
+        # Generate the blank grid for the best crossword
+        self.generatedCrosswords[0].createBlankGrid()
 
         return self.generatedCrosswords[0]
 
@@ -80,6 +80,7 @@ class Crossword:
         self.wordList = deepcopy(wordList)
         self.currentIndex = currentIndex
         self.grid = grid
+        self.blankGrid = []
         self.numWords = numWords
         self.width = width
         self.height = height
@@ -511,10 +512,35 @@ class Crossword:
         '''for word in self.wordsAdded:
             print(word.clueNumber, word.text, word.yposition, word.xposition)'''
 
+    # Tool to create the blank grid with clue numbers
+    def createBlankGrid(self):
+        # Create a blank grid
+        self.blankGrid = deepcopy(self.grid)
+
+        # Replace all letters in the grid with underscores
+        for row in range(self.height):
+            for col in range(self.width):
+                if self.blankGrid[row][col] != '':
+                    self.blankGrid[row][col] = '_'
+
+        # Add the clue numbers to the grid
+        for word in self.wordsAdded:
+            self.blankGrid[word.yposition][word.xposition] = str(word.clueNumber)
 
     # Print the grid
     def printGrid(self):
         for row in self.grid:
+            for col in row:
+                if col == '':
+                    print (' ', end=' ')
+                else:
+                    print(col, end=' ')
+            print()
+
+
+    # Print the blank grid
+    def printBlankGrid(self):
+        for row in self.blankGrid:
             for col in row:
                 if col == '':
                     print (' ', end=' ')

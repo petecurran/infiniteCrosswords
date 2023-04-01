@@ -1,14 +1,18 @@
 .crossword {
     border: 1px solid #000;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .cluenumber {
     font-size: 10pt;
     color: #999;
     vertical-align: super;
+    text-align:left;
 }
 
 .crosswordcell {
-    width:40px;
-    height:40px;
+    border:1px solid #000;
+    height: 40px;
+    width: 40px;
 }
