@@ -62,9 +62,10 @@ class CrosswordGenerator:
 
 # Class to hold words and their positions in the crossword
 class Word:
-    def __init__(self, text, xposition, yposition, direction):
+    def __init__(self, text, clue, xposition, yposition, direction):
         self.text = text # The text of the word
         self.clueNumber = None # The number of the clue for the word
+        self.clue = clue # The clue for the word
         self.xposition = xposition # The x position of the first letter of the word
         self.yposition = yposition # The y position of the first letter of the word
         self.direction = direction # The direction of the word - 'horizontal' or 'vertical'
@@ -547,49 +548,3 @@ class Crossword:
                 else:
                     print(col, end=' ')
             print()
-
-# Test method to generate crosswords without generator.
-def testCrosswords():
-
-    # A list to hold completed crosswords
-    generatedCrosswords = []
-
-    # Choose how many crosswords to generate
-    numCrosswords = 20
-
-    # Generate the crosswords
-    for i in range(numCrosswords):
-        # Create a new crossword object
-        attempt = Crossword([], wordsToInclude, 0, 0, 0, 0, [])
-
-        # Shuffle the list of words
-        shuffle (attempt.wordList)
-
-        # Attempt to add all of the words in the list
-        for word in attempt.wordList:
-            attempt.addWord(word)
-
-        # Add the completed crossword to the list of generated crosswords
-        generatedCrosswords.append(attempt)
-
-    # Sort the crosswords by number of words, with the most words first
-    generatedCrosswords.sort(key=lambda x: x.numWords, reverse=True)
-
-    # Print the three largest crosswords
-    for i in range(3):
-        generatedCrosswords[i].printGrid()
-        print("~"*50)
-        print("Number of words:", generatedCrosswords[i].numWords)
-        print("~"*50)
-
-# Run the test
-#testCrosswords()
-
-# Generate a crossword using the generator
-'''
-generator = CrosswordGenerator(testWords,20)
-result = generator.generateCrossword()
-result.printGrid()
-result.assignClueNumbers()
-print("Best option number of words:",result.numWords)
-'''

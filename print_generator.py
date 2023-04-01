@@ -2,34 +2,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 def crosswordPrinter (crossword, theme):
-    '''Generates a HTML grid of the crossword provided for printing.'''
-
-    # Generate HTML table rows for the height of the crossword
-    tableString = ""
-    for row in range(crossword.height):
-        # Add a row to the table
-        tableString += "<tr>"
-        # Add a cell for each column
-        for column in range(crossword.width):
-            # Get the cell from the crossword
-            cell = crossword.blankGrid[row][column]
-
-            # If the cell is empty, use the empty class
-            if cell == "":
-                tableString += "<td class='crosswordcell bg-dark'></td>"
-
-            # If the cell has a number, it's a clue. Use the clue class
-            elif cell.isdigit():
-                tableString += "<td class='crosswordcell cluenumber'>"+ cell +"</td>"
-
-            # Otherwise, add a white cell to the table
-            else:
-                # Add the cell to the table
-                tableString += "<td class='crosswordcell'></td>"
-
-        # Close the row
-        tableString += "</tr>"
-
+    '''Generates a HTML page of the crossword provided for printing.'''
 
     # Get the current directory
     currentDirectory = os.getcwd()
@@ -37,16 +10,55 @@ def crosswordPrinter (crossword, theme):
     # Get the path to the template file
     templatePath = os.path.join(currentDirectory, "infiniteCrosswords/template.html")
 
+    # Get the path to the created_crosswords folder
+    createdCrosswordsPath = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")
+
+    # Generate the image of the crossword
+    img = generateImage(crossword)
+
+    # Save the image to the img folder in created_crosswords
+    imgPath = os.path.join(createdCrosswordsPath, "img")
+
+    # Check if a file with this theme already exists
+    if os.path.exists(os.path.join(imgPath, theme + ".png")):
+        # If it does, add a number to the end of the file name
+        i = 1
+
+        # Loop until a file with the name doesn't exist
+        while os.path.exists(os.path.join(imgPath, theme + str(i) + ".png")):
+            i += 1
+
+        # Save the image with the new name
+        img.save(os.path.join(imgPath, theme + str(i) + ".png"))
+        fileName = theme + str(i) + ".png"
+
+    else:
+        # Save the image with the theme as the name
+        img.save(os.path.join(imgPath, theme + ".png"))
+        fileName = theme + ".png"
+
+    # Set the image path to the path of the image
+    imagePath = "img/{}".format(fileName)
+
+    # Set the image tag to the image path
+    imageTag = "<img src=\"{}\" alt=\"{}\" id=\"crossword-image\">".format(imagePath, theme)
+
+    titleTag = "<title>Infinite Crosswords - {}</title>".format(theme)
+
+
     # Open the template file
     with open(templatePath, "r") as template:
         # Read the file
         output = template.read()
 
+    # Replace the title with the theme provided
+    output = output.replace("<!--Title goes here-->", titleTag)
+
     # Replace the theme with the theme provided
     output = output.replace("<!--Theme goes here-->", theme)
 
-    # Replace the table with the table generated
-    output = output.replace("<!--Table cells here-->", tableString)
+    # Replace the image tag with the image tag
+    output = output.replace("<!--Image goes here-->", imageTag)
 
     # Set the output directory to the created_crosswords folder
     outputDirectory = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")

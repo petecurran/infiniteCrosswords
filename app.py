@@ -42,6 +42,9 @@ for clue in clues:
     # If there's a space in the clue, remove it.
     if ' ' in clue['word']:
         clue['word'] = clue['word'].replace(' ', '')
+    # If there's an apostrophe in the clue, remove it.
+    if "'" in clue['word']:
+        clue['word'] = clue['word'].replace("'", '')
     
     # Add the clue to the list of generated clues
     generatedClues.append(clue['word'])
@@ -59,6 +62,4 @@ crossword.printGrid()
 crossword.printBlankGrid()
 print("Words added: {}".format(crossword.numWords))
 print("Intersections: {}".format(crossword.numberOfIntersections))
-img = generateImage(crossword)
-img.show()
-img.save("test.png")
+crosswordPrinter(crossword, theme)

@@ -1,18 +1,6 @@
-.crossword {
-    border: 1px solid #000;
+#crossword-image{
     margin: 0 auto;
-    width: 100%;
-}
-
-.cluenumber {
-    font-size: 10pt;
-    color: #999;
-    vertical-align: super;
-    text-align:left;
-}
-
-.crosswordcell {
-    border:1px solid #000;
-    height: 40px;
-    width: 40px;
+    display: block;
+    max-width: 100%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
