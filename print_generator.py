@@ -94,10 +94,10 @@ def crosswordPrinter (crossword, theme):
 
 def generateImage(crossword):
     # Set up the image and drawing context
-    cell_size = 50
+    cell_size = 25
     img_width = cell_size * crossword.width
     img_height = cell_size * crossword.height
-    img = Image.new('RGB', (img_width, img_height), color='white')
+    img = Image.new('RGBA', (img_width+1, img_height+1), (0,0,0,0))
     draw = ImageDraw.Draw(img)
     
     # Set up the font for the clue numbers
@@ -112,14 +112,15 @@ def generateImage(crossword):
             cell_y = y * cell_size
             
             if cell == '':
-                # Draw a black cell
-                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='#333333')
+                # Draw a blank cell with no outline
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), outline='black', width=0)
+                
             elif cell == '_':
                 # Draw a white cell
-                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black')
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black', width=1)
             elif cell.isdigit():
                 # Draw a white cell with the clue number
-                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black')
+                draw.rectangle((cell_x, cell_y, cell_x + cell_size, cell_y + cell_size), fill='white', outline='black', width=1)
                 draw.text((cell_x + 5, cell_y + 5), cell, fill='black', font=font)
                 
     return img

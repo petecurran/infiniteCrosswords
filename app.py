@@ -9,7 +9,7 @@ import time # For testing
 # Get the openai key from config.py
 openai.api_key = config.openAIKey
 
-numClues = 40
+numClues = 20
 theme = input("What is the theme of the crossword?\n")
 
 # Test the openai call
@@ -27,7 +27,7 @@ print(clues)
 
 # Start a timer
 start = time.time()
-generator = CrosswordGenerator(clues, 500)
+generator = CrosswordGenerator(clues, 1000)
 crossword = generator.generateCrossword()
 end = time.time()
 # Print the time taken in minutes and seconds
