@@ -1,5 +1,5 @@
 # Infinite Crosswords
-The most powerful AI the world has yet seen: <br/>
+The most powerful AI the world has yet seen: ...<br/>
 Me: I'd like some crosswords please.
 
 Generates crosswords on any topic given as an input. Mostly done through brute force rather than brains, so key constraint is number of iterations. Set to ~1000 for a great crossword and a 20 minute wait, or ~20 for a good crossword right now. Outputs to a printable HTML file.
