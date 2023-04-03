@@ -27,7 +27,7 @@ print(clues)
 
 # Start a timer
 start = time.time()
-generator = CrosswordGenerator(clues, 1000)
+generator = CrosswordGenerator(clues, 20)
 crossword = generator.generateCrossword()
 end = time.time()
 # Print the time taken in minutes and seconds

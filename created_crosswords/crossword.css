@@ -1,15 +1,64 @@
-#crossword-image{
-    margin: 0 auto;
-    display: block;
-    max-width: 100%;
+@media screen {
+
+    h1, h2, h3, h4, h5, h6{
+        font-family: 'Roboto', sans-serif;
+        color:#EEE5E9;
+    }
+
+    ul {
+        font-family: 'Roboto', sans-serif;
+        color:#EEE5E9;
+    }
+
+    .main-display{
+        background-color: #EEE5E9;
+        padding:0px;
+    }
+
+    .main-heading{
+        background-color: #1f487e;
+        padding:10px;
+        width:100%;
+    }
+
+    #crossword-image{
+        margin: 0 auto;
+        display: block;
+        max-width: 100%;
+        padding:10px;
+        filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .clues-display{
+        background-color: #1f487e;
+        padding:10px;
+        width:100%;
+    }
+
+    .clue-list{
+        list-style: none;
+        padding: 10px;
+    }
+
 }
 
-.clue-list{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+@media print {
+    ul {
+        font-size: 10px;
+    }
 
-.clues-heading{
-    margin-top: 10px;;
+    #crossword-image{
+        margin: 0 auto;
+        display:block;
+        margin-top:20px;
+        max-width: 100%;
+        max-height: 50vh;
+    }
+
+    .clues-display{
+        border: 1px solid black;
+        margin-top:10px;
+        padding:20px;
+        page-break-inside: avoid;
+    }
 }

@@ -526,9 +526,9 @@ class Crossword:
         # Get all of the horizontal clues
         for word in self.wordsAdded:
             if word.direction == 'horizontal':
-                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.length)))
+                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))
             elif word.direction == 'vertical':
-                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.length)))
+                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))
 
         # Sort the horizontal clues low to high by clueNumber
         horizontalClues.sort(key=lambda clue: clue[0], reverse=False)

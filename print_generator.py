@@ -7,8 +7,9 @@ def crosswordPrinter (crossword, theme):
     # Get the current directory
     currentDirectory = os.getcwd()
 
-    # Get the path to the template file
+    # Get the path to the template files
     templatePath = os.path.join(currentDirectory, "infiniteCrosswords/template.html")
+    answersPath = os.path.join(currentDirectory, "infiniteCrosswords/answerstemplate.html")
 
     # Get the path to the created_crosswords folder
     createdCrosswordsPath = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")
@@ -31,11 +32,13 @@ def crosswordPrinter (crossword, theme):
         # Save the image with the new name
         img.save(os.path.join(imgPath, theme + str(i) + ".png"))
         fileName = theme + str(i) + ".png"
+        answersFileName = theme + str(i)
 
     else:
         # Save the image with the theme as the name
         img.save(os.path.join(imgPath, theme + ".png"))
         fileName = theme + ".png"
+        answersFileName = theme
 
     # Set the image path to the path of the image
     imagePath = "img/{}".format(fileName)
@@ -45,36 +48,48 @@ def crosswordPrinter (crossword, theme):
     
     #Update the title
     titleTag = "<title>Infinite Crosswords - {}</title>".format(theme)
+    answerTitleTag = "<title>Infinite Crosswords - {} Answers</title>".format(theme)
 
     # Add a list element for each horizontal clue
     horizontalClues = ""
+    horizontalAnswers = ""
     for clue in crossword.horizontalClues:
         horizontalClues += "<li>{}. {} {}</li>".format(clue[0], clue[1], clue[2])
+        horizontalAnswers += "<li>{}. {}</li>".format(clue[0], clue[3])
 
     # Add a list element for each vertical clue
     verticalClues = ""
+    verticalAnswers = ""
     for clue in crossword.verticalClues:
         verticalClues += "<li>{}. {} {}</li>".format(clue[0], clue[1], clue[2])
+        verticalAnswers += "<li>{}. {}</li>".format(clue[0], clue[3])
 
     # Open the template file
     with open(templatePath, "r") as template:
         # Read the file
         output = template.read()
 
+    with open(answersPath, "r") as answersTemplate:
+        answersOutput = answersTemplate.read()
+
     # Replace the title with the theme provided
     output = output.replace("<!--Title goes here-->", titleTag)
+    answersOutput = answersOutput.replace("<!--Title goes here-->", answerTitleTag)
 
     # Replace the theme with the theme provided
     output = output.replace("<!--Theme goes here-->", theme)
+    answersOutput = answersOutput.replace("<!--Theme goes here-->", theme + " Answers")
 
     # Replace the image tag with the image tag
     output = output.replace("<!--Image goes here-->", imageTag)
 
     # Replace the horizontal clues with the horizontal clues
     output = output.replace("<!--Horizontal clues go here-->", horizontalClues)
+    answersOutput = answersOutput.replace("<!--Horizontal answers go here-->", horizontalAnswers)
 
     # Replace the vertical clues with the vertical clues
     output = output.replace("<!--Vertical clues go here-->", verticalClues)
+    answersOutput = answersOutput.replace("<!--Vertical answers go here-->", verticalAnswers)
 
     # Set the output directory to the created_crosswords folder
     outputDirectory = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")
@@ -86,6 +101,14 @@ def crosswordPrinter (crossword, theme):
     with open(fileName, "w") as outputHTML:
         # Write the output to the file
         outputHTML.write(output)
+
+    # Creat the file name for the answers
+    answersFileName = os.path.join(outputDirectory, answersFileName + " Answers.html")
+
+    # Open the answers file
+    with open(answersFileName, "w") as answersHTML:
+        # Write the answers to the file
+        answersHTML.write(answersOutput)
 
     # Open the output file in the default browser
     os.startfile(fileName)
