@@ -26,7 +26,7 @@ response = openai.ChatCompletion.create(
 content = response.choices[0].message.content # Get the relevant bit from GPT's structured response
 clues = parseClues(content) # Get the clues from the response.
 
-generator = CrosswordGenerator(clues, 20) # Create a crossword generator with the clues and the number of attempts
+generator = CrosswordGenerator(clues, numAttempts) # Create a crossword generator with the clues and the number of attempts
 crossword = generator.generateCrossword() # Generate the crossword
 print("Words added: {}".format(crossword.numWords))
 print("Intersections: {}".format(crossword.numberOfIntersections))
