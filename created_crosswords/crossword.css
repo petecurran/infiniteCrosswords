@@ -52,7 +52,7 @@
         display:block;
         margin-top:20px;
         max-width: 100%;
-        max-height: 50vh;
+        max-height: 90vh;
     }
 
     .clues-display{
@@ -60,5 +60,10 @@
         margin-top:10px;
         padding:20px;
         page-break-inside: avoid;
+    }
+
+    .clues-list{
+        list-style: none;
+        padding: 10px;
     }
 }

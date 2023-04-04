@@ -136,6 +136,10 @@ class Crossword:
             if wordObject.xposition + wordObject.length < self.width:
                 if self.grid[wordObject.yposition][wordObject.xposition + wordObject.length] != '':
                     return False
+                
+            # Check if all characters in the word overlap with the same characters in the grid
+            if len(overlappingIndexes) == wordObject.length:
+                return False
 
         # If the word is vertical:
         else:
@@ -170,6 +174,10 @@ class Crossword:
             if wordObject.yposition + wordObject.length < self.height:
                 if self.grid[wordObject.yposition + wordObject.length][wordObject.xposition] != '':
                     return False
+                
+            # Check if all characters in the word overlap with the same characters in the grid
+            if len(overlappingIndexes) == wordObject.length:
+                return False
 
         # If the word doesn't overlap any existing words, or if the overlapping letters match,
         # Update the number of intersections
@@ -526,9 +534,35 @@ class Crossword:
         # Get all of the horizontal clues
         for word in self.wordsAdded:
             if word.direction == 'horizontal':
-                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))
+                # Check if a word with this clue number already exists.
+                # If it does, keep the longer word.
+                # This handles a case where a subset of a word and a word overlap.
+                # For example, if the word "BANANA" is added, and the word "BAN" is added, the clue for "BAN" should be removed.
+                for clue in horizontalClues:
+                    if clue[0] == word.clueNumber:
+                        # If this word has a longer length, replace the existing clue with this one
+                        if len(clue[3]) < len(word.text):
+                            horizontalClues.remove(clue)
+                            #DEBUG
+                            print("Removed clue {} from horizontalClues".format(clue[3]), "Added clue {} to horizontalClues".format(word.text))
+                        else:
+                            continue     
+                # Add the clue to the list
+                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))         
+
             elif word.direction == 'vertical':
-                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))
+                # As above, but for vertical clues
+                for clue in verticalClues:
+                    if clue[0] == word.clueNumber:
+                        if len(clue[3]) < len(word.text):
+                            verticalClues.remove(clue)
+                            #DEBUG
+                            print("Removed clue {} from verticalClues".format(clue[3]), "Added clue {} to verticalClues".format(word.text))
+                        else:
+                            continue
+
+                # Add the clue to the list
+                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))          
 
         # Sort the horizontal clues low to high by clueNumber
         horizontalClues.sort(key=lambda clue: clue[0], reverse=False)

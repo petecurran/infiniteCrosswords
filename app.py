@@ -10,7 +10,7 @@ import openai
 # openAIKey = 'YOUROPENAIKEY'
 openai.api_key = config.openAIKey
 
-numAttempts = 20 # Number of attempts to generate a crossword. Higher is better but slower. Go and grab a coffee.
+numAttempts = 100 # Number of attempts to generate a crossword. Higher is better but slower. Go and grab a coffee.
 numClues = 20 # Number of clues to include. 20-40 works well. More theoretically possible but the crossword will be very small.
 theme = input("What is the theme of the crossword?\n")
 
