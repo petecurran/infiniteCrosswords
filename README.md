@@ -13,3 +13,4 @@ Run app.py to launch the program.
 
 # Known bugs
 - Short words that share the same letters with the start of long words, eg 'cat' into 'catapult' can appear in the clue list at the same location as the longer word.
+-- I think this is resolved, but you always do until it happens again!
