@@ -10,12 +10,12 @@ import openai
 # openAIKey = 'YOUROPENAIKEY'
 openai.api_key = config.openAIKey
 
-numAttempts = 500 # Number of attempts to generate a crossword. Higher is better but slower. Go and grab a coffee.
-numClues = 20 # Number of clues to include. 20-40 works well. More theoretically possible but the crossword will be very small.
+numAttempts = 100 # Number of attempts to generate a crossword. Higher is better but slower. Go and grab a coffee.
+numClues = 5 # Number of clues to include. 20-40 works well. More theoretically possible but the crossword will be very small.
 theme = input("What is the theme of the crossword?\n")
-print("Generating crossword...")
+print("Querying openAI...")
 
-# Test the openai call
+# Open AI API call
 response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
@@ -27,6 +27,8 @@ response = openai.ChatCompletion.create(
 content = response.choices[0].message.content # Get the relevant bit from GPT's structured response
 clues = parseClues(content) # Get the clues from the response.
 
+# Parse the response from OpenAI
+print("Arranging clues...")
 generator = CrosswordGenerator(clues, numAttempts) # Create a crossword generator with the clues and the number of attempts
 crossword = generator.generateCrossword() # Generate the crossword
 print("Words added: {}".format(crossword.numWords))
