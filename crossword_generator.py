@@ -73,9 +73,42 @@ class Word:
         self.yposition = yposition # The y position of the first letter of the word
         self.direction = direction # The direction of the word - 'horizontal' or 'vertical'
         self.length = len(text)
+        self.lengthToDisplay = "" # The length of the word to display in the crossword
         self.storedxposition = xposition # Store the original x position so we can reset it if the word fails to add
         self.storedyposition = yposition # Store the original y position so we can reset it if the word fails to add
         self.attemptsToAdd = 0 # Number of times the word has been attempted to be added
+        self.sanitiseWord()
+
+    def sanitiseWord(self):
+        '''Removes any words that aren't letters, and updates the lengthToDisplay.'''
+        # Remove any apostrophes
+        self.text = self.text.replace("'", "")
+
+        # Remove any hyphens
+        self.text = self.text.replace("-", "")
+
+        # If there are any spaces in the word, split on the spaces:
+        if " " in self.text:
+            words = self.text.split(" ")
+            # Create a string that shows the length of each word in words, e.g. (3, 5)
+            lengthToDisplay = str(len(words[0]))
+            for i in range(1, len(words)):
+                lengthToDisplay += ", {}".format(len(words[i]))
+
+            # Write the length to display
+            self.lengthToDisplay = lengthToDisplay
+            
+            # Update the word to have no spaces
+            self.text = self.text.replace(" ", "")
+        else:
+            # Write the length to display
+            self.lengthToDisplay = str(len(self.text))
+
+        # Update self.length
+        self.length = len(self.text)
+
+        return
+
 
 # Crossword class
 class Crossword:
