@@ -84,9 +84,11 @@ class Word:
         #DEBUG
         print("Sanitising word:", self.text)
 
-        
         # Remove any apostrophes
         self.text = self.text.replace("'", "")
+
+        # OpenAI will sometimes forget the hyphen rule and use spaces. Swap spaces for hyphens
+        self.text = self.text.replace(" ", "-")
 
         # If there are any hyphens in the word, split on the hyphen:
         if "-" in self.text:
