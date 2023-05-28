@@ -1,5 +1,7 @@
 import os
 from PIL import Image, ImageDraw, ImageFont
+import platform
+import webbrowser
 
 def crosswordPrinter (crossword, theme):
     '''Generates a HTML page of the crossword provided for printing.'''
@@ -8,14 +10,17 @@ def crosswordPrinter (crossword, theme):
     currentDirectory = os.getcwd()
 
     # Get the path to the template files
-    templatePath = os.path.join(currentDirectory, "infiniteCrosswords/template.html")
-    answersPath = os.path.join(currentDirectory, "infiniteCrosswords/answerstemplate.html")
 
-    # Get the path to the created_crosswords folder
-    createdCrosswordsPath = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")
+    templatePath = os.path.join(currentDirectory, "template.html")
+    answersPath = os.path.join(currentDirectory, "answerstemplate.html")
+    createdCrosswordsPath = os.path.join(currentDirectory, "created_crosswords")
 
     # Generate the image of the crossword
     img = generateImage(crossword)
+
+    #Check if the img folder exists in created_crosswords, and create it if not:
+    if not os.path.exists(os.path.join(createdCrosswordsPath, "img")):
+        os.makedirs(os.path.join(createdCrosswordsPath, "img"))
 
     # Save the image to the img folder in created_crosswords
     imgPath = os.path.join(createdCrosswordsPath, "img")
@@ -92,7 +97,8 @@ def crosswordPrinter (crossword, theme):
     answersOutput = answersOutput.replace("<!--Vertical answers go here-->", verticalAnswers)
 
     # Set the output directory to the created_crosswords folder
-    outputDirectory = os.path.join(currentDirectory, "infiniteCrosswords/created_crosswords")
+    outputDirectory = os.path.join(currentDirectory, "created_crosswords")
+
 
     # Create the file name in the directory
     fileName = os.path.join(outputDirectory, theme + ".html")
@@ -110,8 +116,8 @@ def crosswordPrinter (crossword, theme):
         # Write the answers to the file
         answersHTML.write(answersOutput)
 
-    # Open the output file in the default browser
-    os.startfile(fileName)
+    #Launch the file in the default web browser:
+    webbrowser.open_new_tab("file://"+fileName)
 
     return
 
@@ -124,8 +130,15 @@ def generateImage(crossword):
     draw = ImageDraw.Draw(img)
     
     # Set up the font for the clue numbers
-    font_size = int(cell_size * 0.4)
-    font = ImageFont.truetype('arial.ttf', font_size)
+    #If the user is on linux, use a linux safe font:
+    if platform.system() == "Linux":
+        font_size = int(cell_size * 0.4)
+        font = ImageFont.truetype('DejaVuSans.ttf', font_size)
+
+    #If the user is on windows, use the default font:
+    else:
+        font_size = int(cell_size * 0.4)
+        font = ImageFont.truetype('arial.ttf', font_size)
     
     # Draw the grid
     for y, row in enumerate(crossword.blankGrid):
