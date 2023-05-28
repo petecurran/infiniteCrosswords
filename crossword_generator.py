@@ -81,15 +81,16 @@ class Word:
 
     def sanitiseWord(self):
         '''Removes any words that aren't letters, and updates the lengthToDisplay.'''
+        #DEBUG
+        print("Sanitising word:", self.text)
+
+        
         # Remove any apostrophes
         self.text = self.text.replace("'", "")
 
-        # Remove any hyphens
-        self.text = self.text.replace("-", "")
-
-        # If there are any spaces in the word, split on the spaces:
-        if " " in self.text:
-            words = self.text.split(" ")
+        # If there are any hyphens in the word, split on the hyphen:
+        if "-" in self.text:
+            words = self.text.split("-")
             # Create a string that shows the length of each word in words, e.g. (3, 5)
             lengthToDisplay = str(len(words[0]))
             for i in range(1, len(words)):
@@ -98,14 +99,18 @@ class Word:
             # Write the length to display
             self.lengthToDisplay = lengthToDisplay
             
-            # Update the word to have no spaces
-            self.text = self.text.replace(" ", "")
+            # Update the word to have no hyphens
+            self.text = self.text.replace("-", "")
         else:
             # Write the length to display
             self.lengthToDisplay = str(len(self.text))
 
         # Update self.length
         self.length = len(self.text)
+
+        #DEBUG
+        print("Sanitised word:", self.text)
+        print("Length to display:", self.lengthToDisplay)
 
         return
 
@@ -581,7 +586,7 @@ class Crossword:
                         else:
                             continue     
                 # Add the clue to the list
-                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))         
+                horizontalClues.append((word.clueNumber, word.clue, "({})".format(word.lengthToDisplay), word.text))         
 
             elif word.direction == 'vertical':
                 # As above, but for vertical clues
@@ -595,7 +600,7 @@ class Crossword:
                             continue
 
                 # Add the clue to the list
-                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.length), word.text))          
+                verticalClues.append((word.clueNumber, word.clue, "({})".format(word.lengthToDisplay), word.text))          
 
         # Sort the horizontal clues low to high by clueNumber
         horizontalClues.sort(key=lambda clue: clue[0], reverse=False)
