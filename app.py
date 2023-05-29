@@ -6,12 +6,12 @@ import prompts
 import openai
 
 # Get the openai key from config.py
-# This is a file that is not included in the repository. It only requires one line:
+# This is a file that is not included in the repository.
 # openAIKey = 'YOUROPENAIKEY'
 openai.api_key = config.openAIKey
 
 numAttempts = 100 # Number of attempts to generate a crossword. Higher is better but slower. Go and grab a coffee.
-numClues = 5 # Number of clues to include. 20-40 works well. More theoretically possible but the crossword will be very small.
+numClues = 40 # Number of clues to include. 20-40 works well. More theoretically possible but the crossword will be very small.
 theme = input("What is the theme of the crossword?\n")
 print("Querying openAI...")
 

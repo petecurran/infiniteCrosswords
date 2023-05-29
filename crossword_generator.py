@@ -11,11 +11,16 @@ class CrosswordGenerator:
         self.words = []
         self.generatedCrosswords = []
         self.attemptedShuffles = []
+        self.maxWordLength = 15
 
     def setUpWords(self):
         for word in self.wordsToInclude:
-            # Create a Word object for each word
-            self.words.append(Word(word[0], word[1], None, None, None))
+            # Ignore words that are over the max word limit.
+            if len(word[0]) > self.maxWordLength:
+                continue
+            else:
+                # Create a Word object for each word
+                self.words.append(Word(word[0], word[1], None, None, None))
 
     def generateCrossword(self):
         self.setUpWords()
